@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Attendance Registration</title>
+</head>
+<body>
+    <h1>Scan QR Code to Register Attendance</h1>
+    <div id="status"></div>
+    <script>
+        // Predefined location coordinates (latitude and longitude)
+        const targetLatitude = 6.5721150;
+        const targetLongitude = 3.3935900;
+
+        // Function to check geolocation
+        function checkLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const userLatitude = position.coords.latitude;
+                    const userLongitude = position.coords.longitude;
+
+                    // Calculate the distance between user and target location
+                    const distance = getDistance(userLatitude, userLongitude, targetLatitude, targetLongitude);
+
+                    // Allow registration if within 5 meters
+                    if (distance <= 0.005) {
+                        document.getElementById('status').innerText = 'Attendance registered successfully!';
+                    } else {
+                        document.getElementById('status').innerText = 'You are not at the specified location.';
+                    }
+                });
+            } else {
+                document.getElementById('status').innerText = 'Geolocation is not supported by this browser.';
+            }
+        }
+
+        // Function to calculate distance between two coordinates
+        function getDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Radius of the Earth in kilometers
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = R * c; // Distance in kilometers
+            return distance;
+        }
+
+        // Check location on page load
+        window.onload = checkLocation;
+    </script>
+</body>
+</html>
